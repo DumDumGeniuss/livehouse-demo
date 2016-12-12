@@ -17,6 +17,12 @@
 	text-align: center;
 }
 
+.photosArea {
+	display: inline-block;
+	margin-left: 50%;
+	transform: translate(-50%, 0%);
+}
+
 .uploadButton {
 	position: absolute;
 	display: inline-block;

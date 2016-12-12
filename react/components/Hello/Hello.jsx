@@ -1,12 +1,16 @@
 import React from 'react';
 import style from './Hello.scss';
+import 'whatwg-fetch';
+
+import PhotoBox from '../box/PhotoBox/PhotoBox.jsx';
 
 class Hello extends React.Component {
 	constructor (props) {
 		super(props);
 		this.state = {
 			showModal: false,
-			showModalConfirm: false
+			showModalConfirm: false,
+			photos: []
 		};
 	}
 	componentDidMount () {
@@ -18,12 +22,14 @@ class Hello extends React.Component {
 				showModalConfirm: true
 			})
 		};
+		this.addPhoto = this.addPhoto.bind(this);
 	}
 	readImage (file) {
+		const self = this;
 		const reader = new FileReader();
-		const image = document.getElementById('showUploadFile');
+		self.image = document.getElementById('showUploadFile');
 		reader.addEventListener('load', () => {
-			image.src = reader.result;
+			self.image.src = reader.result;
 		},false);
 		reader.readAsDataURL(file);
 	}
@@ -32,16 +38,46 @@ class Hello extends React.Component {
 			showModal: !this.state.showModal
 		});
 	}
+	addPhoto () {
+		this.setState({
+			photos: [this.image.src]
+		});
+	}
 	triggerFileUpload () {
 		this.uploadFileButton.click();
 	}
+	confirmUpload () {
+		const self = this;
+		fetch('http://localhost:3000/files', {
+			method: 'POST'
+		})
+		.then((result) => {
+			return result.json();
+		})
+		.then((result) => {
+			if (result.status === 'success') {
+				self.showModal();
+				self.addPhoto();
+			}
+		});
+	}
 	render () {
+		let { photos } = this.state;
+		console.log(photos);
 		return (
 			<div>
 				<div className={style.mainArea}>
 					<h1 className={style.title}>Your Photos</h1>
 					<span onClick={this.showModal.bind(this)} className={style.uploadButton}>Upload <b>+</b></span>
-
+					<div className={style.photosArea}>
+						{
+							photos.map((item, index) => {
+								return (
+									<PhotoBox photoSrc={photos} key={index}/>
+								)
+							})
+						}
+					</div>
 				</div>
 				<div style={ { display: this.state.showModal?'initial':'none' } } className={style.modalArea}>
 					<div className={style.modalBlock}>
@@ -53,7 +89,13 @@ class Hello extends React.Component {
 							<input type="file" id="uploadFileInput"></input>
 						</div>
 						<img id="showUploadFile"/>
-						<span style={ { display: this.state.showModalConfirm?'initial':'none' } } className={style.showModalConfirm}>confirm</span>
+						<span 
+							style={ { display: this.state.showModalConfirm?'initial':'none' } }
+							className={style.showModalConfirm}
+							onClick={this.confirmUpload.bind(this)}
+						>
+							confirm
+						</span>
 					</div>
 				</div>
 			</div>
