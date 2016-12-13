@@ -1,24 +1,50 @@
-# README
+# Deploy
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+1.clone專案
 
-Things you may want to cover:
+```
+git clone https://github.com/DumDumGeniuss/livehouse-demo.git dir_name
+```
+2.進入資料夾
 
-* Ruby version
+```
+cd dir_name
+```
+3.安裝ruby套件
 
-* System dependencies
+```
+bundle
+```
+4.安裝node套件
 
-* Configuration
+```
+npm install
+```
+5.打包react檔案
 
-* Database creation
+```
+npm run build
+```
 
-* Database initialization
+6.產生rails的SECRET_KEY_BASE準備部署用
 
-* How to run the test suite
+```
+rake secret
+```
 
-* Services (job queues, cache servers, search engines, etc.)
+7.將產生的key輸出供rails讀取
 
-* Deployment instructions
+```
+export SECRET_KEY_BASE='xxxxxxxxxxxxxxxxxxxxxxxxxx'
+```
+8.打包靜態資源
 
-* ...
+```
+RAILS_ENV=production rake assets:precompile
+```
+
+9.啟動server, 完成
+
+```
+RAILS_ENV=production rails server
+```
